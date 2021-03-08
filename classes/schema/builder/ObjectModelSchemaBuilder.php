@@ -39,7 +39,7 @@ if (!defined('_TB_VERSION_')) {
  * Class ObjectModelSchemaBuilder
  *
  * This class is responsible for building DatabaseSchema object based on
- * ObjectModel metadata present in thirty bees core.
+ * ObjectModel metadata present in core.
  *
  * Subclasses of ObjectModel class contains static property $definition which
  * describes information about database tables and columns used by this domain
@@ -52,8 +52,8 @@ if (!defined('_TB_VERSION_')) {
  * database schema, and compile DatabaseSchema object that represents this
  * schema.
  *
- * We can use this DatabaseSchema to create database for thirtybees. Also, by
- * comparing this database schema to current database schema (retrieved by
+ * We can use this DatabaseSchema to create the database. Also, by comparing
+ * this database schema to current database schema (retrieved by
  * InformationSchemaBuilder), we can find all differences, and rectify them.
  *
  * @version 1.1.0 Initial version.
@@ -100,8 +100,8 @@ class ObjectModelSchemaBuilder
     }
 
     /**
-     * Finds all core ObjectModel subclasses in the thirtybees core codebase
-     * and process their $definition.
+     * Finds all core ObjectModel subclasses in the core codebase and process
+     * their $definition.
      *
      * @throws PrestaShopException
      * @throws ReflectionException

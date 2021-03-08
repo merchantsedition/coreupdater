@@ -29,7 +29,7 @@ if (!defined('_TB_VERSION_')) {
 /**
  * Class Requirements.
  *
- * This class checks whether requirements for a specific thirty bees version
+ * This class checks whether requirements for a specific core software version
  * are met by the current installation. Requirements of thirty bees v1.0.0
  * are assumed (else the shop wouldn't run).
  */
@@ -73,7 +73,7 @@ class Requirements
     /**
      * Test for the minimum required PHP version.
      *
-     * @param string $version The thirty bees version to test for.
+     * @param string $version The core software version to test for.
      *
      * @return array Empty array on success, array with error messages on
      *               failure.
@@ -85,13 +85,13 @@ class Requirements
 
         // Minimum PHP version.
         foreach ([
-            // Read 'since thirty bees v1.0.0, PHP v5.5 or later is required'.
+            // Read 'since release 1.0.0, PHP v5.5 or later is required'.
             '1.0.0'   => '5.5',
             '1.1.0'   => '5.6',
         ] as $testVersion => $phpVersion) {
             if (version_compare($version, $testVersion, '>=')
                 && ! version_compare(phpversion(), $phpVersion, '>=')) {
-                $errors[] = sprintf($this->l('thirty bees %s requires PHP %s or later.'), $version, $phpVersion);
+                $errors[] = sprintf($this->l('version %s requires PHP %s or later.'), $version, $phpVersion);
             }
         }
 
@@ -101,7 +101,7 @@ class Requirements
     /**
      * Test for presence of the OpenSSL PHP extension.
      *
-     * @param string $version The thirty bees version to test for.
+     * @param string $version The core software version to test for.
      *
      * @return array Empty array on success, array with error messages on
      *               failure.
@@ -114,7 +114,7 @@ class Requirements
         if (version_compare($version, '1.1.0', '>=')) {
             if ( ! extension_loaded('openssl')
                 || ! function_exists('openssl_encrypt')) {
-                $errors[] = $this->l('thirty bees 1.1.0 or later requires the PHP OpenSSL extension.');
+                $errors[] = $this->l('version 1.1.0 or later requires the PHP OpenSSL extension.');
             }
         }
 

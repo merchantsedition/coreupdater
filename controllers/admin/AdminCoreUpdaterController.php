@@ -134,7 +134,7 @@ class AdminCoreUpdaterController extends ModuleAdminController
                 'title'       => $this->l('Version Select'),
                 'icon'        => 'icon-beaker',
                 'description' => '<p>'
-                                 .$this->l('Here you can update your thirty bees installation and/or switch between thirty bees versions easily.')
+                                 .$this->l('Here you can update your core software installation and/or switch between versions easily.')
                                  .'</p><ol><li>'
                                  .$this->l('Select the version you want to update to. This can be a newer version or an older version, or even the current version (to investigate or fix this installation).')
                                  .'</li><li>'
@@ -142,7 +142,7 @@ class AdminCoreUpdaterController extends ModuleAdminController
                                  .'</li><li>'
                                  .$this->l('Look at the comparison result and proceed accordingly. Clicking on list titles opens them. If you\'re in a hurry or don\'t know what all these lists mean, just click "Update". Update defaults are safe.')
                                  .'</li></ol>',
-                'info'        => $this->l('Current thirty bees version:')
+                'info'        => $this->l('Current core software version:')
                                  .' <b>'.$installedVersion.'</b>',
                 'submit'      => [
                     'title'     => $this->l('Compare'),
@@ -187,7 +187,7 @@ class AdminCoreUpdaterController extends ModuleAdminController
                     'CORE_UPDATER_IGNORE_THEME' => [
                         'type'       => 'bool',
                         'title'      => $this->l('Ignore community themes'),
-                        'desc'       => $this->l('When enabled, the updater ignores themes coming with thirty bees. While this prohibits bugs from getting fixed, it can make sense for those who customized this theme for their needs, without making a copy before.'),
+                        'desc'       => $this->l('When enabled, the updater ignores themes coming with the distribution. While this prohibits bugs from getting fixed, it can make sense for those who customized this theme for their needs, without making a copy before.'),
                         'default'    => false,
                         'no_multishop_checkbox' => true,
                     ],
@@ -225,7 +225,7 @@ class AdminCoreUpdaterController extends ModuleAdminController
                     'CORE_UPDATER_INCOMPATIBLE' => [
                         'type'        => 'none',
                         'title'       => $this->l('Incompatible modules to get uninstalled:'),
-                        'desc'        => $this->l('These modules are currently installed, but not compatible with the target thirty bees version. They\'ll get uninstalled and deleted when updating.'),
+                        'desc'        => $this->l('These modules are currently installed, but not compatible with the target core software version. They\'ll get uninstalled and deleted when updating.'),
                     ],
                     'CORE_UPDATER_UPDATE' => [
                         'type'        => 'none',
@@ -246,7 +246,7 @@ class AdminCoreUpdaterController extends ModuleAdminController
                         'type'        => 'none',
                         'title'       => $this->l('Obsolete files:'),
                         'desc'        => '<p>'
-                                         .$this->l('These files exist locally, but are not needed for the selected version of thirty bees core. Mark the checkbox(es) to remove them.')
+                                         .$this->l('These files exist locally, but are not needed for the selected version of the core software. Mark the checkbox(es) to remove them.')
                                          .'</p><p>'
                                          .$this->l('Obsolete files are generally harmless. PrestaShop and thirty bees before v1.0.8 didn\'t even have tools to detect them. Some of these files might be in use by modules, so it\'s better to keep them. That\'s why there\'s no "select all" button.')
                                          .'</p>',
@@ -317,7 +317,7 @@ class AdminCoreUpdaterController extends ModuleAdminController
         } else {
             $info = (
                 '<div class=\'alert alert-warning\'>' .
-                $this->l('This version of thirtybees does not support database schema comparison and migration') .
+                $this->l('This version of core software does not support database schema comparison and migration') .
                 '</div>'
             );
             $this->fields_options = [

@@ -40,7 +40,7 @@
             {l s='No competing modules found, which is fine.' mod='coreupdater'}
         </p>
         <p>
-            {l s='For updating thirty bees, see Menu -> Preferences -> Core Updater.' mod='coreupdater'}
+            {l s='For updating core software, see Menu -> Preferences -> Core Updater.' mod='coreupdater'}
         </p>
     {/if}
 </div>

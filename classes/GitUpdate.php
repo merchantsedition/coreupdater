@@ -288,10 +288,10 @@ class GitUpdate
                 if ( ! count($errors)) {
                     $me->storage['requirements'] = true;
 
-                    $messages['informations'][] = sprintf($me->l('Requirements for thirty bees version %s checked.'), $version);
+                    $messages['informations'][] = sprintf($me->l('Requirements for core software version %s checked.'), $version);
                     $messages['done'] = false;
                 } else {
-                    $errorLines = sprintf($me->l('Requirements for thirty bees version %s are not met:'), $version);
+                    $errorLines = sprintf($me->l('Requirements for core software version %s are not met:'), $version);
                     foreach ($errors as $message) {
                         $errorLines .= "\n - ".$message;
                     }
@@ -365,7 +365,7 @@ class GitUpdate
                 $messages['changeset']['incompatible'][$module] = false;
             }
 
-            $messages['informations'][] = sprintf($me->l('Found %s installed modules incompatible with thirty bees %s.'), count($incompatibleModules), $version);
+            $messages['informations'][] = sprintf($me->l('Found %s installed modules incompatible with core software %s.'), count($incompatibleModules), $version);
             $messages['done'] = false;
         } else {
             $messages['informations'][] = $me->l('Done.');
@@ -834,7 +834,7 @@ class GitUpdate
             // executed. But the next version comparison will show the results.
             $me->storage['updateScriptDone'] = true;
 
-            $messages['informations'][] = sprintf($me->l('Update script was executed. Welcome to thirty bees %s!'), $me->storage['versionTarget']);
+            $messages['informations'][] = sprintf($me->l('Update script was executed. Welcome to core software version %s!'), $me->storage['versionTarget']);
             $messages['done'] = false;
         } elseif ( ! array_key_exists('aftermathDone', $me->storage)) {
             $aftermathSuccess = $me->doAftermath();
@@ -868,7 +868,7 @@ class GitUpdate
                     $messages['error'] = true;
                 }
             } else {
-                $messages['informations'][] = $me->l('Skipping database migration: this version of thirty bees does not support it');
+                $messages['informations'][] = $me->l('Skipping database migration: this core software version does not support it');
             }
             $messages['done'] = false;
         } else {
@@ -878,8 +878,8 @@ class GitUpdate
     }
 
     /**
-     * Download a couple of files from the Git repository on the thirty bees
-     * server and save them in the cache directory.
+     * Download a couple of files from the Git repository on the api server and
+     * save them in the cache directory.
      *
      * $this->storage['versionTarget'] and $this->storage['downloads'] are
      * expected to be valid.

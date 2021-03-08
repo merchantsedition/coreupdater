@@ -29,9 +29,7 @@ if (!defined('_TB_VERSION_')) {
 /**
  * Class Retrocompatibility.
  *
- * This class provides old fashioned upgrades. Newer thirty bees versions
- * implement installationCheck() methods for classes in need of upgrades
- * instead.
+ * This class provides upgrades.
  */
 class Retrocompatibility
 {
