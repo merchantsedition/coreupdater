@@ -62,7 +62,7 @@ $(document).ready(function () {
 });
 
 function channelChange(firstRun) {
-  var channelSelect = $('#CORE_UPDATER_CHANNEL');
+  var channelSelect = document.getElementById('CORE_UPDATER_CHANNEL');
   var versionSelect = $('#CORE_UPDATER_VERSION');
 
   if ( ! channelSelect || ! versionSelect.length) {
@@ -70,20 +70,25 @@ function channelChange(firstRun) {
   }
 
   if (firstRun === true) {
-    if ( ! /^[0-9\.]*$/.exec(coreUpdaterParameters.selectedVersion)) {
-      channelSelect.val('branches');
+    while (channelSelect.firstChild) {
+      channelSelect.removeChild(channelSelect.firstChild);
+    }
+    for (let i = 0; i < coreUpdaterChannelList.length; i++) {
+      let htmlItem = document.createElement('option');
+      htmlItem.value = i;
+      htmlItem.innerHTML = coreUpdaterChannelList[i].name;
+      channelSelect.appendChild(htmlItem);
     }
   }
-
   versionSelect.empty();
-  channel = channelSelect.val();
+  var channel = coreUpdaterChannelList[channelSelect.selectedIndex];
   $.ajax({
-    url: coreUpdaterParameters.apiUrl,
+    url: channel.apiUrl,
     type: 'POST',
-    data: {'list': channel},
+    data: {'list': channel.channel},
     dataType: 'json',
     success: function(data, status, xhr) {
-      if (channel === 'tags') {
+      if (channel.channel === 'tags') {
         data.reverse();
       }
       data.forEach(function(version) {
@@ -102,7 +107,7 @@ function channelChange(firstRun) {
       var helpText = $('#conf_id_CORE_UPDATER_VERSION').find('.help-block');
       helpText.html(coreUpdaterParameters.errorRetrieval);
       helpText.css('color', 'red');
-      console.log('Request to '+coreUpdaterParameters.apiUrl
+      console.log('Request to '+channel.apiUrl
                   +' failed with status \''+xhr.state()+'\'.');
     },
   });

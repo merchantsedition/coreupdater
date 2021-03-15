@@ -38,14 +38,39 @@ class AdminCoreUpdaterController extends ModuleAdminController
 {
     const API_URL   = 'https://api.thirtybees.com/coreupdater/master.php';
     const CHANNELS  = [
-        'Stable'                      => 'tags',
-        'Bleeding Edge'               => 'branches',
-        //'Developer (enter Git hash)'  => 'gitHash', // implementation postponed
+        [
+            'name'    => 'Merchant\'s Edition Stable',
+            'channel' => 'tags',
+            'apiUrl'  => 'https://api.merchantsedition.com/coreupdater/master.php',
+        ],
+        [
+            'name'    => 'Merchant\'s Edition Bleeding Edge',
+            'channel' => 'branches',
+            'apiUrl'  => 'https://api.merchantsedition.com/coreupdater/master.php',
+        ],
+        //[ // implementation postponed
+        //    'name'    => 'Merchant\'s Edition Developer (enter Git hash)',
+        //    'channel' => 'gitHash',
+        //    'apiUrl'  => 'https://api.merchantsedition.com/coreupdater/master.php',
+        //],
+        [
+            'name'    => 'thirty bees Stable',
+            'channel' => 'tags',
+            'apiUrl'  => 'https://api.thirtybees.com/coreupdater/master.php',
+        ],
+        [
+            'name'    => 'thirty bees Bleeding Edge',
+            'channel' => 'branches',
+            'apiUrl'  => 'https://api.thirtybees.com/coreupdater/master.php',
+        ],
     ];
     // For the translations parser:
-    // $this->l('Stable');
-    // $this->l('Bleeding Edge');
-    // $this->l('Developer (enter Git hash)');
+    //
+    // $this->l('Merchant\'s Edition Stable');
+    // $this->l('Merchant\'s Edition Bleeding Edge');
+    // $this->l('Merchant\'s Edition Developer (enter Git hash)');
+    // $this->l('thirty bees Stable');
+    // $this->l('thirty bees Bleeding Edge');
 
     const PARAM_TAB = 'tab';
     const TAB_CODEBASE = 'codebase';
@@ -115,13 +140,12 @@ class AdminCoreUpdaterController extends ModuleAdminController
      */
     private function initCodebaseTab()
     {
-        $displayChannelList = [];
-        foreach (static::CHANNELS as $channel => $path) {
-            $displayChannelList[] = [
-                'channel' => $path,
-                'name'    => $this->l($channel),
-            ];
+        $channelList = static::CHANNELS;
+        // Apply translations.
+        foreach ($channelList as &$channel) {
+            $channel['name'] = $this->l($channel['name']);
         }
+        Media::addJsDef(['coreUpdaterChannelList' => $channelList]);
 
         $installedVersion = \CoreUpdater\GitUpdate::getInstalledVersion();
         $selectedVersion = Tools::getValue('CORE_UPDATER_VERSION');
@@ -153,7 +177,6 @@ class AdminCoreUpdaterController extends ModuleAdminController
                     'CORE_UPDATER_PARAMETERS' => [
                         'type'        => 'hidden',
                         'value'       => htmlentities(json_encode([
-                            'apiUrl'          => static::API_URL,
                             'selectedVersion' => $selectedVersion,
                             'completedLog'    => $this->l('completed'),
                             'completedList'   => $this->l('%d items'),
@@ -168,7 +191,7 @@ class AdminCoreUpdaterController extends ModuleAdminController
                         'title'       => $this->l('Channel:'),
                         'desc'        => $this->l('This is the Git channel to update from. "Stable" lists releases, "Bleeding Edge" lists development branches.'),
                         'identifier'  => 'channel',
-                        'list'        => $displayChannelList,
+                        'list'        => [['channel' => '', 'name' => '']],
                         'no_multishop_checkbox' => true,
                     ],
                     'CORE_UPDATER_VERSION' => [
