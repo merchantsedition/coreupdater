@@ -157,7 +157,7 @@ class AdminCoreUpdaterController extends ModuleAdminController
                             'selectedVersion' => $selectedVersion,
                             'completedLog'    => $this->l('completed'),
                             'completedList'   => $this->l('%d items'),
-                            'errorRetrieval'  => $this->l('request failed, see JavaScript console'),
+                            'errorRetrieval'  => $this->l('Request failed, see JavaScript console.'),
                             'errorProcessing' => $this->l('Processing failed.'),
                         ])),
                         'auto_value' => false,
@@ -176,12 +176,7 @@ class AdminCoreUpdaterController extends ModuleAdminController
                         'title'       => $this->l('Version to compare to:'),
                         'desc'        => $this->l('Retrieving versions for this channel ...'),
                         'identifier'  => 'version',
-                        'list'        => [
-                            [
-                                'version' => '',
-                                'name'    => '',
-                            ],
-                        ],
+                        'list'        => [['version' => '', 'name' => '']],
                         'no_multishop_checkbox' => true,
                     ],
                     'CORE_UPDATER_IGNORE_THEME' => [
@@ -204,9 +199,9 @@ class AdminCoreUpdaterController extends ModuleAdminController
             $this->fields_options['comparepanel'] = [
                 'title'       => $this->l('Update Comparison'),
                 'description' => '<p>'
-                                 .$this->l('This panel compares all files of this shop installation with a clean installation of the version given above. To update this shop to that version, update all files to the clean installation.')
+                                 .$this->l('This panel compares all files of this shop installation with a clean installation of the version given above.')
                                  .'</p><p>'
-                                 .$this->l('Manually edited files will get backed up before they get overwritten.')
+                                 .$this->l('To update this shop to that version, use \'Update\' below. Previously manually edited files will get backed up before being overwritten.')
                                  .'</p>',
                 'submit'      => [
                     'title'     => $this->l('Update'),
