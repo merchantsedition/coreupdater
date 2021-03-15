@@ -333,7 +333,7 @@ class Retrocompatibility
                 }
 
                 $tab->save();
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 $errors[] = sprintf($this->l('Could not create back office menu item for class "%s".'), $tabSet['tabClassName']);
                 continue;
             }

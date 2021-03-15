@@ -442,7 +442,7 @@ class GitUpdate
                     'listrev' => $version,
                 ],
             ])->getBody();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return trim($e->getMessage());
         }
 
@@ -923,7 +923,7 @@ class GitUpdate
                 ],
                 'sink'        => $archiveFile,
             ]);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             unlink($archiveFile);
 
             return trim($e->getMessage());
