@@ -275,8 +275,8 @@ function collectSelectedObsolete() {
     }
   })
 
-  $('input[name=CORE_UPDATER_PARAMETERS]').val(
-    JSON.stringify({selectedObsolete: selectedObsolete})
+  $('input[name=CORE_UPDATER_REMOVE_LIST]').val(
+    JSON.stringify(selectedObsolete)
   );
 
   // Save bandwidth.

@@ -278,6 +278,12 @@ class AdminCoreUpdaterController extends ModuleAdminController
                                          .$this->l('Obsolete files are generally harmless. PrestaShop and thirty bees before v1.0.8 didn\'t even have tools to detect them. Some of these files might be in use by modules, so it\'s better to keep them. That\'s why there\'s no "select all" button.')
                                          .'</p>',
                     ],
+                    'CORE_UPDATER_REMOVE_LIST' => [
+                        'type'        => 'hidden',
+                        'value'       => '',
+                        'auto_value'  => false,
+                        'no_multishop_checkbox' => true,
+                    ],
                 ],
             ];
         } elseif (Tools::isSubmit('coreUpdaterUpdate')) {
@@ -399,14 +405,11 @@ class AdminCoreUpdaterController extends ModuleAdminController
          * Collect parameters sent back. This uses the same hidden input field
          * which is used to forward parameters to the browser.
          */
-        $parameters = Tools::getValue('CORE_UPDATER_PARAMETERS');
-        if ($parameters) {
-            $parameters = json_decode($parameters, true);
-            if (array_key_exists('selectedObsolete', $parameters)) {
-                \CoreUpdater\GitUpdate::setSelectedObsolete(
-                    $parameters['selectedObsolete']
-                );
-            }
+        $obsoleteList = Tools::getValue('CORE_UPDATER_REMOVE_LIST');
+        if ($obsoleteList) {
+            \CoreUpdater\GitUpdate::setSelectedObsolete(
+                json_decode($obsoleteList, true)
+            );
         }
 
         /**
