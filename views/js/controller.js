@@ -266,13 +266,9 @@ function appendChangeset(changeset, field) {
 function collectSelectedObsolete() {
   var selectedObsolete = [];
 
-  $('#conf_id_CORE_UPDATER_REMOVE_OBSOLETE')
-  .find('table')
-  .find('tr')
+  $('#conf_id_CORE_UPDATER_REMOVE_OBSOLETE table input:checked')
   .filter(function(index, element) {
-    if ($(element).find('input').prop('checked')) {
-      selectedObsolete.push($(element).find('td:last').html());
-    }
+    selectedObsolete.push($(element).parents('tr').find('td:last').html());
   })
 
   $('input[name=CORE_UPDATER_REMOVE_LIST]').val(
