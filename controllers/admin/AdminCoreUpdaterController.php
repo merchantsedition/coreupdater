@@ -423,7 +423,13 @@ class AdminCoreUpdaterController extends ModuleAdminController
             $this->confirmations[] = $message;
         }
 
-        // Intentionally not calling parent, there's nothing to do.
+        $channel = Tools::getValue('CORE_UPDATER_CHANNEL');
+        if ($channel !== false) {
+            Configuration::updateGlobalValue('CORE_UPDATER_CHANNEL', $channel);
+        }
+
+        // Intentionally not calling parent to avoid writing additional
+        // values to the configuration table.
     }
 
     /**

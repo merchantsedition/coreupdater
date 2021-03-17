@@ -123,6 +123,7 @@ class CoreUpdater extends Module
             $success = $success && $tab->delete();
         }
 
+        Configuration::deleteByName('CORE_UPDATER_CHANNEL');
         Configuration::deleteByName('CORE_UPDATER_IGNORE_THEME');
 
         return $success && parent::uninstall();
