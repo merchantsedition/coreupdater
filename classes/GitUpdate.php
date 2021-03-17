@@ -325,11 +325,13 @@ class GitUpdate
             if ($downloadSuccess === true) {
                 $messages['informations'][] =
                     sprintf($me->l('File list for version %s downloaded.'), $installedVersion);
-                $messages['done'] = false;
             } else {
-                $messages['informations'][] = sprintf($me->l('Failed to download file list for version %s with error: %s'), $installedVersion, $downloadSuccess);
-                $messages['error'] = true;
+                // The currently installed version may have disappeared from
+                // the API server, e.g. if it was an issue-specific Bleeding
+                // Edge version. That's disappointing, but no showstopper.
+                $messages['informations'][] = sprintf($me->l('File list for version %s not available.'), $installedVersion);
             }
+            $messages['done'] = false;
         } elseif ( ! array_key_exists('topLevel-'.$version, $me->storage)) {
             $me->extractTopLevelDirs($version);
             $me->storage['installationList'] = [];
@@ -443,6 +445,7 @@ class GitUpdate
                 ],
             ])->getBody();
         } catch (\Exception $e) {
+            $this->storage['fileList-'.$version] = [];
             return trim($e->getMessage());
         }
 
