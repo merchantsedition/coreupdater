@@ -28,10 +28,7 @@ $(document).ready(function () {
   coreUpdaterInitialIgnoreTheme
     = $('input[name=CORE_UPDATER_IGNORE_THEME]:checked').val();
 
-  channelChange(true);
-  $('#CORE_UPDATER_CHANNEL').on('change', channelChange);
-
-  $('#CORE_UPDATER_VERSION').on('change', versionChange);
+  channelChange();
 
   $('input[name=CORE_UPDATER_IGNORE_THEME]').on('change', ignoranceChange);
 
@@ -59,7 +56,7 @@ $(document).ready(function () {
   }
 });
 
-function channelChange(firstRun) {
+function channelChange() {
   var channelSelect = document.getElementById('CORE_UPDATER_CHANNEL');
   var versionSelect = $('#CORE_UPDATER_VERSION');
 
