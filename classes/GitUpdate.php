@@ -710,6 +710,18 @@ class GitUpdate
                         $manual = true;
                     }
                     $removeList[$path] = $manual;
+                } elseif (
+                    // Top level vendor files.
+                    preg_match('#^vendor/#', $path)
+                    // Core code files. No non-code files, e.g. 'Cart.php.org'.
+                    || preg_match('#^Adapter/.*\.php$#', $path)
+                    || preg_match('#^Core/.*\.php$#', $path)
+                    || preg_match('#^classes/.*\.php$#', $path)
+                    || preg_match('#^controllers/.*\.php$#', $path)
+                ) {
+                    // Always remove these files, they can be harmful. Neither
+                    // modules nor hackers should put files there.
+                    $removeList[$path] = true;
                 } else {
                     // Obsolete files are all files existing locally, but
                     // neither in the target nor in the original version.
