@@ -67,18 +67,6 @@ function channelChange(firstRun) {
     return;
   }
 
-  if (firstRun === true) {
-    while (channelSelect.firstChild) {
-      channelSelect.removeChild(channelSelect.firstChild);
-    }
-    for (let i = 0; i < coreUpdaterChannelList.length; i++) {
-      let htmlItem = document.createElement('option');
-      htmlItem.value = i;
-      htmlItem.innerHTML = coreUpdaterChannelList[i].name;
-      channelSelect.appendChild(htmlItem);
-    }
-    channelSelect.value = coreUpdaterChannel;
-  }
   versionSelect.empty();
   var channel = coreUpdaterChannelList[channelSelect.selectedIndex];
   $.ajax({

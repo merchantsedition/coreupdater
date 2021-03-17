@@ -140,17 +140,6 @@ class AdminCoreUpdaterController extends ModuleAdminController
      */
     private function initCodebaseTab()
     {
-        $channelList = static::CHANNELS;
-        // Apply translations.
-        foreach ($channelList as &$channel) {
-            $channel['name'] = $this->l($channel['name']);
-        }
-
-        $channel = Tools::getValue('CORE_UPDATER_CHANNEL');
-        if ( ! $channel) {
-            $channel = 0;
-        }
-
         $installedVersion = \CoreUpdater\GitUpdate::getInstalledVersion();
         $selectedVersion = Tools::getValue('CORE_UPDATER_VERSION');
         if ( ! $selectedVersion) {
@@ -158,8 +147,7 @@ class AdminCoreUpdaterController extends ModuleAdminController
         }
 
         Media::addJsDef([
-            'coreUpdaterChannelList'  => $channelList,
-            'coreUpdaterChannel'      => $channel,
+            'coreUpdaterChannelList'  => static::CHANNELS,
             'coreUpdaterVersion'      => $selectedVersion,
             'coreUpdaterTexts'        => [
                 'completedLog'    => $this->l('completed'),
@@ -168,6 +156,14 @@ class AdminCoreUpdaterController extends ModuleAdminController
                 'errorProcessing' => $this->l('Processing failed.'),
             ],
         ]);
+
+        $channelSelectList = [];
+        foreach (static::CHANNELS as $index => $channel) {
+            $channelSelectList[] = [
+                'channel' => $index,
+                'name'    => $this->l($channel['name']),
+            ];
+        }
 
         $this->fields_options = [
             'updatepanel' => [
@@ -195,7 +191,8 @@ class AdminCoreUpdaterController extends ModuleAdminController
                         'title'       => $this->l('Channel:'),
                         'desc'        => $this->l('This is the Git channel to update from. "Stable" lists releases, "Bleeding Edge" lists development branches.'),
                         'identifier'  => 'channel',
-                        'list'        => [['channel' => '', 'name' => '']],
+                        'list'        => $channelSelectList,
+                        'default'     => 0,
                         'no_multishop_checkbox' => true,
                     ],
                     'CORE_UPDATER_VERSION' => [
