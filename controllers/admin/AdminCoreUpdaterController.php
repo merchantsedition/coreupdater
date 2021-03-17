@@ -145,13 +145,22 @@ class AdminCoreUpdaterController extends ModuleAdminController
         foreach ($channelList as &$channel) {
             $channel['name'] = $this->l($channel['name']);
         }
-        Media::addJsDef(['coreUpdaterChannelList' => $channelList]);
+
+        $channel = Tools::getValue('CORE_UPDATER_CHANNEL');
+        if ( ! $channel) {
+            $channel = 0;
+        }
 
         $installedVersion = \CoreUpdater\GitUpdate::getInstalledVersion();
         $selectedVersion = Tools::getValue('CORE_UPDATER_VERSION');
         if ( ! $selectedVersion) {
             $selectedVersion = $installedVersion;
         }
+
+        Media::addJsDef([
+            'coreUpdaterChannelList'  => $channelList,
+            'coreUpdaterChannel'      => $channel,
+        ]);
 
         $this->fields_options = [
             'updatepanel' => [

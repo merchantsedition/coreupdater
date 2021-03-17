@@ -79,6 +79,7 @@ function channelChange(firstRun) {
       htmlItem.innerHTML = coreUpdaterChannelList[i].name;
       channelSelect.appendChild(htmlItem);
     }
+    channelSelect.value = coreUpdaterChannel;
   }
   versionSelect.empty();
   var channel = coreUpdaterChannelList[channelSelect.selectedIndex];
