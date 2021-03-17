@@ -161,6 +161,12 @@ class AdminCoreUpdaterController extends ModuleAdminController
             'coreUpdaterChannelList'  => $channelList,
             'coreUpdaterChannel'      => $channel,
             'coreUpdaterVersion'      => $selectedVersion,
+            'coreUpdaterTexts'        => [
+                'completedLog'    => $this->l('completed'),
+                'completedList'   => $this->l('%d items'),
+                'errorRetrieval'  => $this->l('Request failed, see JavaScript console.'),
+                'errorProcessing' => $this->l('Processing failed.'),
+            ],
         ]);
 
         $this->fields_options = [
@@ -184,17 +190,6 @@ class AdminCoreUpdaterController extends ModuleAdminController
                     'name'      => 'coreUpdaterCompare',
                 ],
                 'fields' => [
-                    'CORE_UPDATER_PARAMETERS' => [
-                        'type'        => 'hidden',
-                        'value'       => htmlentities(json_encode([
-                            'completedLog'    => $this->l('completed'),
-                            'completedList'   => $this->l('%d items'),
-                            'errorRetrieval'  => $this->l('Request failed, see JavaScript console.'),
-                            'errorProcessing' => $this->l('Processing failed.'),
-                        ])),
-                        'auto_value' => false,
-                        'no_multishop_checkbox' => true,
-                    ],
                     'CORE_UPDATER_CHANNEL' => [
                         'type'        => 'select',
                         'title'       => $this->l('Channel:'),

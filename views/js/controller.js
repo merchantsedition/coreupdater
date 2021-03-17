@@ -22,37 +22,34 @@
 /*
  * Upgrade panel.
  */
-var coreUpdaterParameters;
 var coreUpdaterInitialIgnoreTheme;
 
 $(document).ready(function () {
-  if ($('input[name=CORE_UPDATER_PARAMETERS]').length) {
-      coreUpdaterParameters = JSON.parse($('input[name=CORE_UPDATER_PARAMETERS]').val());
-      coreUpdaterInitialIgnoreTheme
-          = $('input[name=CORE_UPDATER_IGNORE_THEME]:checked').val();
+  coreUpdaterInitialIgnoreTheme
+    = $('input[name=CORE_UPDATER_IGNORE_THEME]:checked').val();
 
-      channelChange(true);
-      $('#CORE_UPDATER_CHANNEL').on('change', channelChange);
+  channelChange(true);
+  $('#CORE_UPDATER_CHANNEL').on('change', channelChange);
 
-      $('#CORE_UPDATER_VERSION').on('change', versionChange);
+  $('#CORE_UPDATER_VERSION').on('change', versionChange);
 
-      $('input[name=CORE_UPDATER_IGNORE_THEME]').on('change', ignoranceChange);
+  $('input[name=CORE_UPDATER_IGNORE_THEME]').on('change', ignoranceChange);
 
-      $('button[name=coreUpdaterUpdate]').on('click', collectSelectedObsolete);
+  $('button[name=coreUpdaterUpdate]').on('click', collectSelectedObsolete);
 
-      addBootstrapCollapser('CORE_UPDATER_PROCESSING', false);
+  addBootstrapCollapser('CORE_UPDATER_PROCESSING', false);
 
-      if (document.getElementById('configuration_fieldset_comparepanel')) {
-          $('button[name=coreUpdaterUpdate]').prop('disabled', true);
-          processAction('processCompare');
-      }
-      if (document.getElementById('configuration_fieldset_processpanel')) {
-          $('#configuration_fieldset_updatepanel').find('select, button')
-              .prop('disabled', true);
-          $('button[name=coreUpdaterFinalize]').prop('disabled', true);
-          processAction('processUpdate');
-      }
+  if (document.getElementById('configuration_fieldset_comparepanel')) {
+      $('button[name=coreUpdaterUpdate]').prop('disabled', true);
+      processAction('processCompare');
   }
+  if (document.getElementById('configuration_fieldset_processpanel')) {
+      $('#configuration_fieldset_updatepanel').find('select, button')
+          .prop('disabled', true);
+      $('button[name=coreUpdaterFinalize]').prop('disabled', true);
+      processAction('processUpdate');
+  }
+
   if (document.getElementById('configuration_fieldset_database')) {
       $('#refresh-btn').on('click', function(e) {
           e.preventDefault();
@@ -107,7 +104,7 @@ function channelChange(firstRun) {
     },
     error: function(xhr, status, error) {
       var helpText = $('#conf_id_CORE_UPDATER_VERSION').find('.help-block');
-      helpText.html(coreUpdaterParameters.errorRetrieval);
+      helpText.html(coreUpdaterTexts.errorRetrieval);
       helpText.css('color', 'red');
       console.log('Request to '+channel.apiUrl
                   +' failed with status \''+xhr.state()+'\'.');
@@ -169,7 +166,7 @@ function processAction(action) {
             .filter(function() {
               return this.nodeType === 3 && this.nodeValue.trim !== '';
             })
-            [0].data = ' '+coreUpdaterParameters.errorProcessing;
+            [0].data = ' '+coreUpdaterTexts.errorProcessing;
         }
         logField.value += data['informations'][i];
       }
@@ -210,7 +207,7 @@ function processAction(action) {
           $('button[name=coreUpdaterFinalize]').prop('disabled', false);
         }
         addCompletedText('CORE_UPDATER_PROCESSING',
-                         coreUpdaterParameters.completedLog);
+                         coreUpdaterTexts.completedLog);
       }
     },
     error: function(xhr, status, error) {
@@ -220,7 +217,7 @@ function processAction(action) {
 
   function ajaxError(message, responseText) {
     addCompletedText('CORE_UPDATER_PROCESSING',
-                     coreUpdaterParameters.errorRetrieval);
+                     coreUpdaterTexts.errorRetrieval);
     $('#conf_id_CORE_UPDATER_PROCESSING')
       .find('label')
       .css('color', 'red')
@@ -260,7 +257,7 @@ function appendChangeset(changeset, field) {
 
   node.append(html);
 
-  addCompletedText(field, coreUpdaterParameters.completedList, count);
+  addCompletedText(field, coreUpdaterTexts.completedList, count);
 }
 
 function collectSelectedObsolete() {
