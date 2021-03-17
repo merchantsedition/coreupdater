@@ -81,16 +81,14 @@ function channelChange() {
             versionSelect.val(coreUpdaterVersion);
           }
       });
-      $('#conf_id_CORE_UPDATER_VERSION')
-        .find('.help-block')
-        .parent()
-        .slideUp(200);
+      $('#conf_id_CORE_UPDATER_VERSION .help-block').parent().slideUp(200);
       versionSelect.trigger('change');
     },
     error: function(xhr, status, error) {
-      var helpText = $('#conf_id_CORE_UPDATER_VERSION').find('.help-block');
+      var helpText = $('#conf_id_CORE_UPDATER_VERSION .help-block');
       helpText.html(coreUpdaterTexts.errorRetrieval);
       helpText.css('color', 'red');
+      helpText.parent().slideDown(200);
       console.log('Request to '+channel.apiUrl
                   +' failed with status \''+xhr.state()+'\'.');
     },
