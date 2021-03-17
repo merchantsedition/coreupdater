@@ -94,8 +94,8 @@ function channelChange(firstRun) {
       }
       data.forEach(function(version) {
           versionSelect.append('<option>'+version+'</option>');
-          if (version === coreUpdaterParameters.selectedVersion) {
-            versionSelect.val(coreUpdaterParameters.selectedVersion);
+          if (version === coreUpdaterVersion) {
+            versionSelect.val(coreUpdaterVersion);
           }
       });
       $('#conf_id_CORE_UPDATER_VERSION')
@@ -129,8 +129,7 @@ function ignoranceChange(event) {
 };
 
 function comparePanelSlide() {
-  if ($('#CORE_UPDATER_VERSION').val()
-      === coreUpdaterParameters.selectedVersion
+  if ($('#CORE_UPDATER_VERSION').val() === coreUpdaterVersion
       && $('input[name=CORE_UPDATER_IGNORE_THEME]:checked').val()
          === coreUpdaterParameters.ignoreTheme) {
     $('#configuration_fieldset_comparepanel').slideDown(1000);
@@ -145,7 +144,7 @@ function processAction(action) {
   $.ajax({
     url: url,
     type: 'POST',
-    data: {'compareVersion': coreUpdaterParameters.selectedVersion},
+    data: {'compareVersion': coreUpdaterVersion},
     dataType: 'json',
     success: function(data, status, xhr) {
       if ( ! data) {

@@ -160,6 +160,7 @@ class AdminCoreUpdaterController extends ModuleAdminController
         Media::addJsDef([
             'coreUpdaterChannelList'  => $channelList,
             'coreUpdaterChannel'      => $channel,
+            'coreUpdaterVersion'      => $selectedVersion,
         ]);
 
         $this->fields_options = [
@@ -186,7 +187,6 @@ class AdminCoreUpdaterController extends ModuleAdminController
                     'CORE_UPDATER_PARAMETERS' => [
                         'type'        => 'hidden',
                         'value'       => htmlentities(json_encode([
-                            'selectedVersion' => $selectedVersion,
                             'completedLog'    => $this->l('completed'),
                             'completedList'   => $this->l('%d items'),
                             'errorRetrieval'  => $this->l('Request failed, see JavaScript console.'),
