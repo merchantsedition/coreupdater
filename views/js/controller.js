@@ -23,11 +23,12 @@
  * Upgrade panel.
  */
 var coreUpdaterParameters;
+var coreUpdaterInitialIgnoreTheme;
 
 $(document).ready(function () {
   if ($('input[name=CORE_UPDATER_PARAMETERS]').length) {
       coreUpdaterParameters = JSON.parse($('input[name=CORE_UPDATER_PARAMETERS]').val());
-      coreUpdaterParameters.ignoreTheme
+      coreUpdaterInitialIgnoreTheme
           = $('input[name=CORE_UPDATER_IGNORE_THEME]:checked').val();
 
       channelChange(true);
@@ -131,7 +132,7 @@ function ignoranceChange(event) {
 function comparePanelSlide() {
   if ($('#CORE_UPDATER_VERSION').val() === coreUpdaterVersion
       && $('input[name=CORE_UPDATER_IGNORE_THEME]:checked').val()
-         === coreUpdaterParameters.ignoreTheme) {
+         === coreUpdaterInitialIgnoreTheme) {
     $('#configuration_fieldset_comparepanel').slideDown(1000);
   } else {
     $('#configuration_fieldset_comparepanel').slideUp(1000);
