@@ -396,22 +396,34 @@ class AdminCoreUpdaterController extends ModuleAdminController
      */
     public function postProcess()
     {
-        /**
-         * Collect parameters sent back. This uses the same hidden input field
-         * which is used to forward parameters to the browser.
-         */
-        $obsoleteList = Tools::getValue('CORE_UPDATER_REMOVE_LIST');
-        if ($obsoleteList) {
-            \CoreUpdater\GitUpdate::setSelectedObsolete(
-                json_decode($obsoleteList, true)
-            );
-        }
-
-        /**
-         * Send a confirmation message with the finalize step. Default action
-         * is to show the initial page already.
-         */
-        if (Tools::isSubmit('coreUpdaterFinalize')) {
+        if (Tools::isSubmit('coreUpdaterCompare')) {
+            /**
+             * Collect a definition of an update when starting a comparison.
+             * This must not change for the actual update.
+             */
+            $channel = Tools::getValue('CORE_UPDATER_CHANNEL');
+            if ($channel !== false) {
+                Configuration::updateGlobalValue(
+                    'CORE_UPDATER_CHANNEL',
+                    $channel
+                );
+            }
+        } elseif (Tools::isSubmit('coreUpdaterUpdate')) {
+            /**
+             * Only addition for the actual update is the list of files to
+             * remove.
+             */
+            $obsoleteList = Tools::getValue('CORE_UPDATER_REMOVE_LIST');
+            if ($obsoleteList) {
+                \CoreUpdater\GitUpdate::setSelectedObsolete(
+                    json_decode($obsoleteList, true)
+                );
+            }
+        } elseif (Tools::isSubmit('coreUpdaterFinalize')) {
+            /**
+             * Send a confirmation message with the finalize step. Default
+             * action is to show the initial page already.
+             */
             $message = '<p>'.$this->l('Shop updated successfully.').'</p>';
             $backupDir = \CoreUpdater\GitUpdate::getBackupDir();
             if ($backupDir) {
@@ -421,11 +433,6 @@ class AdminCoreUpdaterController extends ModuleAdminController
             }
 
             $this->confirmations[] = $message;
-        }
-
-        $channel = Tools::getValue('CORE_UPDATER_CHANNEL');
-        if ($channel !== false) {
-            Configuration::updateGlobalValue('CORE_UPDATER_CHANNEL', $channel);
         }
 
         // Intentionally not calling parent to avoid writing additional
