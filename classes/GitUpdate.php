@@ -236,18 +236,16 @@ class GitUpdate
     }
 
     /**
-     * Do one step to build a comparison, starting with the first step.
-     * Subsequent calls see results of the previous step and proceed with the
-     * next one accordingly.
+     * Define versions to compare. Mandatory before starting a comparison.
+     * The same definition is then used for a following update.
      *
-     * @param array $messages Prepared array to append messages to. Format see
-     *                        AdminCoreUpdaterController->ajaxProcess().
-     * @param string $version Version to compare the installation on disk to.
+     * Also take care of dumping old or outdated storage.
      *
-     * @version 1.0.0 Initial version.
-     * @throws PrestaShopException
+     * @param string $versionTarget Version to compare the installation against.
+     *
+     * @version 2.0.0 Initial version.
      */
-    public static function compareStep(&$messages, $version)
+    public static function setCompareVersions($versionTarget)
     {
         $me = static::getInstance();
         $installedVersion = static::getInstalledVersion();
@@ -265,7 +263,7 @@ class GitUpdate
         if ( ! array_key_exists('versionOrigin', $me->storage)
             || $me->storage['versionOrigin'] !== $installedVersion
             || ! array_key_exists('versionTarget', $me->storage)
-            || $me->storage['versionTarget'] !== $version
+            || $me->storage['versionTarget'] !== $versionTarget
             || ! array_key_exists('ignoreTheme', $me->storage)
             || $me->storage['ignoreTheme'] !== $ignoreTheme) {
 
@@ -278,11 +276,39 @@ class GitUpdate
             }
 
             $me->storage['versionOrigin'] = $installedVersion;
-            $me->storage['versionTarget'] = $version;
+            $me->storage['versionTarget'] = $versionTarget;
             $me->storage['ignoreTheme']   = $ignoreTheme;
         }
+    }
 
-        // Do one compare step.
+    /**
+     * Do one step to build a comparison, starting with the first step.
+     * Subsequent calls see results of the previous step and proceed with the
+     * next one accordingly.
+     *
+     * @param array $messages Prepared array to append messages to. Format see
+     *                        AdminCoreUpdaterController->ajaxProcess().
+     *
+     * @version 1.0.0 Initial version.
+     * @version 2.0.0 Parameter $version removed, use setCompareVersions().
+     * @throws PrestaShopException
+     */
+    public static function compareStep(&$messages)
+    {
+        $me = static::getInstance();
+
+        if ( ! array_key_exists('versionOrigin', $me->storage)
+            || ! array_key_exists('versionTarget', $me->storage)
+            || ! array_key_exists('ignoreTheme', $me->storage)) {
+            $messages['informations'][] = $me->l('Crucial storage set missing, please report this on Github.');
+            $messages['error'] = true;
+
+            return;
+        }
+
+        $installedVersion = $me->storage['versionOrigin'];
+        $version = $me->storage['versionTarget'];
+
         if ( ! array_key_exists('requirements', $me->storage)) {
             if (preg_match('/^[0-9\.]*$/', $version)) {
                 // It's a stable version, requirement checks possible.
@@ -767,13 +793,12 @@ class GitUpdate
      *
      * @param array $messages Prepared array to append messages to. Format see
      *                        AdminCoreUpdaterController->ajaxProcess().
-     * @param string $version Unused, for signature compatibility with
-     *                        compareStep().
      *
      * @version 1.0.0 Initial version.
+     * @version 2.0.0 Unused parameter $version removed.
      * @throws PrestaShopException
      */
-    public static function updateStep(&$messages, $version)
+    public static function updateStep(&$messages)
     {
         $me = static::getInstance();
 
@@ -786,7 +811,11 @@ class GitUpdate
             || ! array_key_exists('obsolete', $me->storage['changeset'])) {
             $messages['informations'][] = $me->l('Crucial storage set missing, please report this on Github.');
             $messages['error'] = true;
-        } elseif (count($me->storage['incompatibleModules'])) {
+
+            return;
+        }
+
+        if (count($me->storage['incompatibleModules'])) {
             $module = array_pop($me->storage['incompatibleModules']);
             $errors = Retrocompatibility::removeModule($module);
 

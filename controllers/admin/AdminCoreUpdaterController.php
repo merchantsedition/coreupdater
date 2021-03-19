@@ -427,6 +427,12 @@ class AdminCoreUpdaterController extends ModuleAdminController
                     $version
                 );
             }
+
+            /**
+             * This defines comparison and update versions for all subsequent
+             * operations.
+             */
+            \CoreUpdater\GitUpdate::setCompareVersions($version);
         } elseif (Tools::isSubmit('coreUpdaterUpdate')) {
             /**
              * Only addition for the actual update is the list of files to
@@ -487,16 +493,11 @@ class AdminCoreUpdaterController extends ModuleAdminController
             die('Invalid request for Ajax action \''.$type.'\'.');
         }
 
-        $version = Tools::getValue('compareVersion');
-        if ( ! $version) {
-            die('Parameter \'compareVersion\' is empty.');
-        }
-
         $start = time();
         do {
             $stepStart = microtime(true);
 
-            \CoreUpdater\GitUpdate::{$method}($messages, $version);
+            \CoreUpdater\GitUpdate::{$method}($messages);
             if ($messages['error']) {
                 $messages['done'] = true;
             }

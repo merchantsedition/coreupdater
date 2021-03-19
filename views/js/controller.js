@@ -123,7 +123,6 @@ function processAction(action) {
   $.ajax({
     url: url,
     type: 'POST',
-    data: {'compareVersion': coreUpdaterVersion},
     dataType: 'json',
     success: function(data, status, xhr) {
       if ( ! data) {
