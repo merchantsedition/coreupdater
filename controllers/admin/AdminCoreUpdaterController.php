@@ -141,24 +141,14 @@ class AdminCoreUpdaterController extends ModuleAdminController
     private function initCodebaseTab()
     {
         $installedVersion = \CoreUpdater\GitUpdate::getInstalledVersion();
-        $selectedVersion = Tools::getValue('CORE_UPDATER_VERSION');
-        if ( ! $selectedVersion) {
-            $selectedVersion = $installedVersion;
-        }
-
-        Media::addJsDef([
-            'coreUpdaterChannelList'  => static::CHANNELS,
-            'coreUpdaterVersion'      => $selectedVersion,
-            'coreUpdaterTexts'        => [
-                'completedLog'    => $this->l('completed'),
-                'completedList'   => $this->l('%d items'),
-                'errorRetrieval'  => $this->l('Request failed, see JavaScript console.'),
-                'errorProcessing' => $this->l('Processing failed.'),
-            ],
-        ]);
+        $selectedVersion = false;
 
         $this->fields_options = [];
         if (Tools::isSubmit('coreUpdaterUpdate')) {
+            $selectedVersion = Configuration::getGlobalValue(
+                'CORE_UPDATER_VERSION'
+            );
+
             /*
              * Show an empty file processing panel. Existence of this panel
              * causes JavaScript to trigger requests for doing all the steps
@@ -193,6 +183,11 @@ class AdminCoreUpdaterController extends ModuleAdminController
                     'channel' => $index,
                     'name'    => $this->l($channel['name']),
                 ];
+            }
+
+            $selectedVersion = Tools::getValue('CORE_UPDATER_VERSION');
+            if ( ! $selectedVersion) {
+                $selectedVersion = $installedVersion;
             }
 
             /*
@@ -320,6 +315,17 @@ class AdminCoreUpdaterController extends ModuleAdminController
                 \CoreUpdater\GitUpdate::deleteStorage(false);
             }
         }
+
+        Media::addJsDef([
+            'coreUpdaterChannelList'  => static::CHANNELS,
+            'coreUpdaterVersion'      => $selectedVersion,
+            'coreUpdaterTexts'        => [
+                'completedLog'    => $this->l('completed'),
+                'completedList'   => $this->l('%d items'),
+                'errorRetrieval'  => $this->l('Request failed, see JavaScript console.'),
+                'errorProcessing' => $this->l('Processing failed.'),
+            ],
+        ]);
     }
 
     /**
@@ -412,6 +418,13 @@ class AdminCoreUpdaterController extends ModuleAdminController
                 Configuration::updateGlobalValue(
                     'CORE_UPDATER_CHANNEL',
                     $channel
+                );
+            }
+            $version = Tools::getValue('CORE_UPDATER_VERSION');
+            if ($version !== false) {
+                Configuration::updateGlobalValue(
+                    'CORE_UPDATER_VERSION',
+                    $version
                 );
             }
         } elseif (Tools::isSubmit('coreUpdaterUpdate')) {

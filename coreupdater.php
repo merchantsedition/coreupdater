@@ -124,6 +124,7 @@ class CoreUpdater extends Module
         }
 
         Configuration::deleteByName('CORE_UPDATER_CHANNEL');
+        Configuration::deleteByName('CORE_UPDATER_VERSION');
         Configuration::deleteByName('CORE_UPDATER_IGNORE_THEME');
 
         return $success && parent::uninstall();
