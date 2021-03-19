@@ -259,7 +259,9 @@ class GitUpdate
         }
 
         // Reset an invalid storage set.
-        $ignoreTheme = \Configuration::get('CORE_UPDATER_IGNORE_THEME');
+        $ignoreTheme = \Configuration::getGlobalValue(
+            'CORE_UPDATER_IGNORE_THEME'
+        );
         if ( ! array_key_exists('versionOrigin', $me->storage)
             || $me->storage['versionOrigin'] !== $installedVersion
             || ! array_key_exists('versionTarget', $me->storage)

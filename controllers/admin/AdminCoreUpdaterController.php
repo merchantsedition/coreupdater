@@ -551,7 +551,8 @@ class AdminCoreUpdaterController extends ModuleAdminController
     }
 
     /**
-     * Method to update Ignore Theme parameter
+     * Method to update Ignore Theme parameter. There is no simple default
+     * processing implemented in core.
      *
      * @return array
      * @throws HTMLPurifier_Exception
@@ -559,18 +560,17 @@ class AdminCoreUpdaterController extends ModuleAdminController
      */
     protected function updateIgnoreTheme()
     {
-        // Here it gets ugly. There is no simple default processing
-        // implemented in core.
-        $success = Configuration::updateValue(
+        $success = Configuration::updateGlobalValue(
             'CORE_UPDATER_IGNORE_THEME',
-            Tools::getValue('value'));
+            Tools::getValue('value')
+        );
 
         $confirmations = [];
         $error = false;
         if ($success) {
             $confirmations[] = $this->l('Ignorance setting updated.');
         } else {
-            $error = $this->l('Could not update ignorance of the community theme.');
+            $error = $this->l('Could not update ignorance of community themes.');
         }
 
         return [
