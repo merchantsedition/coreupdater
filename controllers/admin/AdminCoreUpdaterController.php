@@ -261,6 +261,9 @@ class AdminCoreUpdaterController extends ModuleAdminController
                                      .'</p><p>'
                                      .$this->l('To update this shop to that version, use \'Update\' below. Previously manually edited files will get backed up before being overwritten.')
                                      .'</p>',
+                    'info'        => sprintf($this->l('Comparing %s to %s.'),
+                                             '<b>'.$installedVersion.'</b>',
+                                             '<b>'.$selectedVersion.'</b>'),
                     'submit'      => [
                         'title'     => $this->l('Update'),
                         'imgclass'  => 'update',
