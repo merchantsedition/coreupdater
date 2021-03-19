@@ -38,6 +38,8 @@ class AdminCoreUpdaterController extends ModuleAdminController
 {
     const API_URL   = 'https://api.thirtybees.com/coreupdater/master.php';
     const CHANNELS  = [
+        // Changing this list may require adjusting the default for
+        // CORE_UPDATER_INSTALLCHANNEL in GitUpdate::setCompareVersions().
         [
             'name'    => 'Merchant\'s Edition Stable',
             'channel' => 'tags',
@@ -432,7 +434,7 @@ class AdminCoreUpdaterController extends ModuleAdminController
              * This defines comparison and update versions for all subsequent
              * operations.
              */
-            \CoreUpdater\GitUpdate::setCompareVersions($version);
+            \CoreUpdater\GitUpdate::setCompareVersions($channel, $version);
         } elseif (Tools::isSubmit('coreUpdaterUpdate')) {
             /**
              * Only addition for the actual update is the list of files to

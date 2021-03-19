@@ -241,14 +241,39 @@ class GitUpdate
      *
      * Also take care of dumping old or outdated storage.
      *
+     * @param string $channelTarget Channel for the version to compare against.
      * @param string $versionTarget Version to compare the installation against.
      *
      * @version 2.0.0 Initial version.
      */
-    public static function setCompareVersions($versionTarget)
+    public static function setCompareVersions($channelTarget, $versionTarget)
     {
         $me = static::getInstance();
         $installedVersion = static::getInstalledVersion();
+
+        /**
+         * This is the equivalent to _TB_VERSION_, stored in
+         * config/settings.inc.php, but for the channel from where the update
+         * was fetched from. Storing the channel is required, because a given
+         * version has no fixed relationship to a certain channel.
+         *
+         * Knowing the channel is important, as it gives e.g. the API URL
+         * needed for fetching original hashes of installed files. It's not
+         * fatal to not have it, though.
+         */
+        $installedChannel = \Configuration::getGlobalValue(
+            'CORE_UPDATER_INSTALLCHANNEL'
+        );
+        if ($installedChannel === false
+            || ! array_key_exists($installedChannel, MyController::CHANNELS)
+        ) {
+            // Guess it and hope for the best!
+            if (version_compare($installedVersion, '1.9.0', '>=')) {
+                $installedChannel = 0; // Merchant's Edition Stable
+            } else {
+                $installedChannel = 2; // thirty bees Stable
+            }
+        }
 
         // Dump very old storage.
         if (file_exists(static::STORAGE_PATH)
@@ -260,8 +285,12 @@ class GitUpdate
         $ignoreTheme = \Configuration::getGlobalValue(
             'CORE_UPDATER_IGNORE_THEME'
         );
-        if ( ! array_key_exists('versionOrigin', $me->storage)
+        if ( ! array_key_exists('channelOrigin', $me->storage)
+            || $me->storage['channelOrigin'] !== $installedChannel
+            || ! array_key_exists('versionOrigin', $me->storage)
             || $me->storage['versionOrigin'] !== $installedVersion
+            || ! array_key_exists('channelTarget', $me->storage)
+            || $me->storage['channelTarget'] !== $channelTarget
             || ! array_key_exists('versionTarget', $me->storage)
             || $me->storage['versionTarget'] !== $versionTarget
             || ! array_key_exists('ignoreTheme', $me->storage)
@@ -275,7 +304,9 @@ class GitUpdate
                 static::deleteStorage(false);
             }
 
+            $me->storage['channelOrigin']  = $installedChannel;
             $me->storage['versionOrigin'] = $installedVersion;
+            $me->storage['channelTarget']  = $channelTarget;
             $me->storage['versionTarget'] = $versionTarget;
             $me->storage['ignoreTheme']   = $ignoreTheme;
         }
@@ -297,7 +328,9 @@ class GitUpdate
     {
         $me = static::getInstance();
 
-        if ( ! array_key_exists('versionOrigin', $me->storage)
+        if ( ! array_key_exists('channelOrigin', $me->storage)
+            || ! array_key_exists('versionOrigin', $me->storage)
+            || ! array_key_exists('channelTarget', $me->storage)
             || ! array_key_exists('versionTarget', $me->storage)
             || ! array_key_exists('ignoreTheme', $me->storage)) {
             $messages['informations'][] = $me->l('Crucial storage set missing, please report this on Github.');
@@ -802,7 +835,8 @@ class GitUpdate
     {
         $me = static::getInstance();
 
-        if ( ! array_key_exists('versionTarget', $me->storage)
+        if ( ! array_key_exists('channelTarget', $me->storage)
+            || ! array_key_exists('versionTarget', $me->storage)
             || ! array_key_exists('incompatibleModules', $me->storage)
             || ! array_key_exists('changeset', $me->storage)
             || ! array_key_exists('change', $me->storage['changeset'])
@@ -1151,6 +1185,17 @@ class GitUpdate
     protected function doAftermath()
     {
         $errors = [];
+
+        /**
+         * Remember the used channel. Details see compareStep().
+         */
+        $channel = \Tools::getValue('CORE_UPDATER_CHANNEL');
+        if ($channel !== false) {
+            \Configuration::updateGlobalValue(
+                'CORE_UPDATER_INSTALLCHANNEL',
+                $channel
+            );
+        }
 
         /**
          * Update shop installation version.
