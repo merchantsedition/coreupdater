@@ -157,16 +157,48 @@ class AdminCoreUpdaterController extends ModuleAdminController
             ],
         ]);
 
-        $channelSelectList = [];
-        foreach (static::CHANNELS as $index => $channel) {
-            $channelSelectList[] = [
-                'channel' => $index,
-                'name'    => $this->l($channel['name']),
+        $this->fields_options = [];
+        if (Tools::isSubmit('coreUpdaterUpdate')) {
+            /*
+             * Show an empty file processing panel. Existence of this panel
+             * causes JavaScript to trigger requests for doing all the steps
+             * necessary processing the update.
+             */
+            $this->fields_options['processpanel'] = [
+                'title'       => $this->l('Update Processing'),
+                'info'        => sprintf($this->l('Processing update from %s to %s.'),
+                                         '<b>'.$installedVersion.'</b>',
+                                         '<b>'.$selectedVersion.'</b>'),
+                'submit'      => [
+                    'title'     => $this->l('Finalize'),
+                    'imgclass'  => 'ok',
+                    'name'      => 'coreUpdaterFinalize',
+                ],
+                'fields' => [
+                    // Intentionally the same name as in the comparepanel.
+                    'CORE_UPDATER_PROCESSING' => [
+                        'type'        => 'textarea',
+                        'title'       => $this->l('Processing log:'),
+                        'cols'        => 2000,
+                        'rows'        => 10,
+                        'value'       => $this->l('Starting...'),
+                        'auto_value'  => false,
+                    ],
+                ],
             ];
-        }
+        } else {
+            $channelSelectList = [];
+            foreach (static::CHANNELS as $index => $channel) {
+                $channelSelectList[] = [
+                    'channel' => $index,
+                    'name'    => $this->l($channel['name']),
+                ];
+            }
 
-        $this->fields_options = [
-            'updatepanel' => [
+            /*
+             * Show a channel and version select panel.
+             */
+            $this->fields_options['updatepanel'] = [
                 'title'       => $this->l('Version Select'),
                 'icon'        => 'icon-beaker',
                 'description' => '<p>'
@@ -214,106 +246,77 @@ class AdminCoreUpdaterController extends ModuleAdminController
                         'no_multishop_checkbox' => true,
                     ],
                 ],
-            ],
-        ];
+            ];
 
-        if (Tools::isSubmit('coreUpdaterCompare')) {
-            /*
-             * Show an empty file compare panel. Existence of this panel
-             * causes JavaScript to trigger requests for doing all the steps
-             * necessary for preparing an update, which also fills the lists.
-             */
-            $this->fields_options['comparepanel'] = [
-                'title'       => $this->l('Update Comparison'),
-                'description' => '<p>'
-                                 .$this->l('This panel compares all files of this shop installation with a clean installation of the version given above.')
-                                 .'</p><p>'
-                                 .$this->l('To update this shop to that version, use \'Update\' below. Previously manually edited files will get backed up before being overwritten.')
-                                 .'</p>',
-                'submit'      => [
-                    'title'     => $this->l('Update'),
-                    'imgclass'  => 'update',
-                    'name'      => 'coreUpdaterUpdate',
-                ],
-                'fields' => [
-                    'CORE_UPDATER_PROCESSING' => [
-                        'type'        => 'textarea',
-                        'title'       => $this->l('Processing log:'),
-                        'cols'        => 2000,
-                        'rows'        => 10,
-                        'value'       => $this->l('Starting...'),
-                        'auto_value'  => false,
+            if (Tools::isSubmit('coreUpdaterCompare')) {
+                /*
+                 * Show an empty file compare panel. Existence of this panel
+                 * causes JavaScript to trigger requests for doing all the steps
+                 * necessary for preparing an update, which also fills the lists.
+                 */
+                $this->fields_options['comparepanel'] = [
+                    'title'       => $this->l('Update Comparison'),
+                    'description' => '<p>'
+                                     .$this->l('This panel compares all files of this shop installation with a clean installation of the version given above.')
+                                     .'</p><p>'
+                                     .$this->l('To update this shop to that version, use \'Update\' below. Previously manually edited files will get backed up before being overwritten.')
+                                     .'</p>',
+                    'submit'      => [
+                        'title'     => $this->l('Update'),
+                        'imgclass'  => 'update',
+                        'name'      => 'coreUpdaterUpdate',
                     ],
-                    'CORE_UPDATER_INCOMPATIBLE' => [
-                        'type'        => 'none',
-                        'title'       => $this->l('Incompatible modules to get uninstalled:'),
-                        'desc'        => $this->l('These modules are currently installed, but not compatible with the target core software version. They\'ll get uninstalled and deleted when updating.'),
+                    'fields' => [
+                        'CORE_UPDATER_PROCESSING' => [
+                            'type'        => 'textarea',
+                            'title'       => $this->l('Processing log:'),
+                            'cols'        => 2000,
+                            'rows'        => 10,
+                            'value'       => $this->l('Starting...'),
+                            'auto_value'  => false,
+                        ],
+                        'CORE_UPDATER_INCOMPATIBLE' => [
+                            'type'        => 'none',
+                            'title'       => $this->l('Incompatible modules to get uninstalled:'),
+                            'desc'        => $this->l('These modules are currently installed, but not compatible with the target core software version. They\'ll get uninstalled and deleted when updating.'),
+                        ],
+                        'CORE_UPDATER_UPDATE' => [
+                            'type'        => 'none',
+                            'title'       => $this->l('Files to get changed:'),
+                            'desc'        => $this->l('These files get updated for the version change. "M" means, doing so overwrites manual local edits of this file.'),
+                        ],
+                        'CORE_UPDATER_ADD' => [
+                            'type'        => 'none',
+                            'title'       => $this->l('Files to get created:'),
+                            'desc'        => $this->l('These files get created for the version change.'),
+                        ],
+                        'CORE_UPDATER_REMOVE' => [
+                            'type'        => 'none',
+                            'title'       => $this->l('Files to get removed:'),
+                            'desc'        => $this->l('These files get removed for the version change. "M" means, doing so also removes manual local edits of this file.'),
+                        ],
+                        'CORE_UPDATER_REMOVE_OBSOLETE' => [
+                            'type'        => 'none',
+                            'title'       => $this->l('Obsolete files:'),
+                            'desc'        => '<p>'
+                                             .$this->l('These files exist locally, but are not needed for the selected version of the core software. Mark the checkbox(es) to remove them.')
+                                             .'</p><p>'
+                                             .$this->l('Obsolete files are generally harmless. PrestaShop and thirty bees before v1.0.8 didn\'t even have tools to detect them. Some of these files might be in use by modules, so it\'s better to keep them. That\'s why there\'s no "select all" button.')
+                                             .'</p>',
+                        ],
+                        'CORE_UPDATER_REMOVE_LIST' => [
+                            'type'        => 'hidden',
+                            'value'       => '',
+                            'auto_value'  => false,
+                            'no_multishop_checkbox' => true,
+                        ],
                     ],
-                    'CORE_UPDATER_UPDATE' => [
-                        'type'        => 'none',
-                        'title'       => $this->l('Files to get changed:'),
-                        'desc'        => $this->l('These files get updated for the version change. "M" means, doing so overwrites manual local edits of this file.'),
-                    ],
-                    'CORE_UPDATER_ADD' => [
-                        'type'        => 'none',
-                        'title'       => $this->l('Files to get created:'),
-                        'desc'        => $this->l('These files get created for the version change.'),
-                    ],
-                    'CORE_UPDATER_REMOVE' => [
-                        'type'        => 'none',
-                        'title'       => $this->l('Files to get removed:'),
-                        'desc'        => $this->l('These files get removed for the version change. "M" means, doing so also removes manual local edits of this file.'),
-                    ],
-                    'CORE_UPDATER_REMOVE_OBSOLETE' => [
-                        'type'        => 'none',
-                        'title'       => $this->l('Obsolete files:'),
-                        'desc'        => '<p>'
-                                         .$this->l('These files exist locally, but are not needed for the selected version of the core software. Mark the checkbox(es) to remove them.')
-                                         .'</p><p>'
-                                         .$this->l('Obsolete files are generally harmless. PrestaShop and thirty bees before v1.0.8 didn\'t even have tools to detect them. Some of these files might be in use by modules, so it\'s better to keep them. That\'s why there\'s no "select all" button.')
-                                         .'</p>',
-                    ],
-                    'CORE_UPDATER_REMOVE_LIST' => [
-                        'type'        => 'hidden',
-                        'value'       => '',
-                        'auto_value'  => false,
-                        'no_multishop_checkbox' => true,
-                    ],
-                ],
-            ];
-        } elseif (Tools::isSubmit('coreUpdaterUpdate')) {
-            /*
-             * Show an empty file processing panel. Existence of this panel
-             * causes JavaScript to trigger requests for doing all the steps
-             * necessary processing the update.
-             */
-            $this->fields_options['processpanel'] = [
-                'title'       => $this->l('Update Processing'),
-                'info'        => sprintf($this->l('Processing update from %s to %s.'),
-                                         '<b>'.$installedVersion.'</b>',
-                                         '<b>'.$selectedVersion.'</b>'),
-                'submit'      => [
-                    'title'     => $this->l('Finalize'),
-                    'imgclass'  => 'ok',
-                    'name'      => 'coreUpdaterFinalize',
-                ],
-                'fields' => [
-                    // Intentionally the same name as in the comparepanel.
-                    'CORE_UPDATER_PROCESSING' => [
-                        'type'        => 'textarea',
-                        'title'       => $this->l('Processing log:'),
-                        'cols'        => 2000,
-                        'rows'        => 10,
-                        'value'       => $this->l('Starting...'),
-                        'auto_value'  => false,
-                    ],
-                ],
-            ];
-        } else {
-            // New session.
-            \CoreUpdater\GitUpdate::deleteStorage(false);
+                ];
+            } else {
+                // New session.
+                \CoreUpdater\GitUpdate::deleteStorage(false);
+            }
         }
-
     }
 
     /**

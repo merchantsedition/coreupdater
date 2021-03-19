@@ -41,8 +41,6 @@ $(document).ready(function () {
       processAction('processCompare');
   }
   if (document.getElementById('configuration_fieldset_processpanel')) {
-      $('#configuration_fieldset_updatepanel').find('select, button')
-          .prop('disabled', true);
       $('button[name=coreUpdaterFinalize]').prop('disabled', true);
       processAction('processUpdate');
   }
