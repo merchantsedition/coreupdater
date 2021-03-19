@@ -131,11 +131,11 @@ function processAction(action) {
         return;
       }
 
-      logField = $('textarea[name=CORE_UPDATER_PROCESSING]')[0];
-      infoList = data['informations'];
-      infoListLength = infoList.length;
+      let logField = $('textarea[name=CORE_UPDATER_PROCESSING]')[0];
+      let infoList = data['informations'];
+      let infoListLength = infoList.length;
 
-      for (i = 0; i < infoListLength; i++) {
+      for (let i = 0; i < infoListLength; i++) {
         logField.value += "\n";
         if (data['error'] && i === infoListLength - 1) {
           logField.value += "ERROR: ";
