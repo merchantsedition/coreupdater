@@ -124,6 +124,10 @@ class ObjectModelSchemaBuilder
             if (preg_match("/^.+\.php$/i", $file)) {
                 $className = str_replace(".php", "", $file);
                 if ($className !== "index") {
+                    $namespace = $this->resolveNamespace($path);
+                    if ($namespace) {
+                        $className = $namespace . $className;
+                    }
                     if (! class_exists($className)) {
                         require_once($path);
                     }
@@ -139,6 +143,25 @@ class ObjectModelSchemaBuilder
                 }
             }
         }
+    }
+
+    /**
+     * Extracts namespace from the php file, if exists
+     *
+     * @param string $path file path
+     * @return string namespace or empty string
+     */
+    protected function resolveNamespace($path)
+    {
+        $content = @file_get_contents($path);
+        $lines = explode("\n", $content);
+        foreach ($lines as $line) {
+            if (preg_match('#^\s*namespace\s+([^\s;]+)\s*;\s*$#', $line, $matches)) {
+                $fileNamespace = trim($matches[1], '\\') . '\\';
+                return $fileNamespace;
+            }
+        }
+        return "";
     }
 
     /**
