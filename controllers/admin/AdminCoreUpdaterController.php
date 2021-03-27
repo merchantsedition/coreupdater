@@ -36,7 +36,6 @@ require_once _PS_MODULE_DIR_.'/coreupdater/classes/GitUpdate.php';
  */
 class AdminCoreUpdaterController extends ModuleAdminController
 {
-    const API_URL   = 'https://api.thirtybees.com/coreupdater/master.php';
     const CHANNELS  = [
         // Changing this list may require adjusting the default for
         // CORE_UPDATER_INSTALLCHANNEL in GitUpdate::setCompareVersions().

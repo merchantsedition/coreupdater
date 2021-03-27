@@ -218,18 +218,26 @@ class GitUpdate
     /**
      * Get Guzzle instance. Same basic parameters for all usages.
      *
+     * @param int $channel Channel to connect with.
+     *
      * @return \GuzzleHttp\Client Singleton instance of class GuzzleHttp\Client.
      *
      * @version 1.0.0 Initial version.
+     * @version 2.0.0 New parameter $channel.
      */
-    protected function getGuzzle()
+    protected function getGuzzle($channel)
     {
-        if ( ! $this->guzzle) {
+        static $openChannel = false;
+
+        $channel = (int) $channel;
+        $uri = dirname(MyController::CHANNELS[$channel]['apiUrl']).'/';
+        if ( ! $this->guzzle || $channel !== $openChannel) {
             $this->guzzle = new \GuzzleHttp\Client([
-                'base_uri'    => MyController::API_URL,
+                'base_uri'    => $uri,
                 'verify'      => _PS_TOOL_DIR_.'cacert.pem',
                 'timeout'     => 20,
             ]);
+            $openChannel = $channel;
         }
 
         return $this->guzzle;
@@ -497,10 +505,11 @@ class GitUpdate
      */
     protected function downloadFileList($version)
     {
-        $guzzle = $this->getGuzzle();
+        $guzzle = $this->getGuzzle(2);
         $response = false;
+        $uri = basename(MyController::CHANNELS[2]['apiUrl']);
         try {
-            $response = $guzzle->post(basename(MyController::API_URL), [
+            $response = $guzzle->post($uri, [
                 'form_params' => [
                     'listrev' => $version,
                 ],
@@ -994,9 +1003,10 @@ class GitUpdate
             return $this->l('Could not create temporary file for download.');
         }
 
-        $guzzle = $this->getGuzzle();
+        $guzzle = $this->getGuzzle(2);
+        $uri = basename(MyController::CHANNELS[2]['apiUrl']);
         try {
-            $guzzle->post(basename(MyController::API_URL), [
+            $response = $guzzle->post($uri, [
                 'form_params' => [
                     'revision'  => $this->storage['versionTarget'],
                     'archive'   => $pathList,
