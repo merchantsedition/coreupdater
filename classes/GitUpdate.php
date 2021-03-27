@@ -379,7 +379,10 @@ class GitUpdate
                 $messages['done'] = false;
             }
         } elseif ( ! array_key_exists('fileList-'.$version, $me->storage)) {
-            $downloadSuccess = $me->downloadFileList($version);
+            $downloadSuccess = $me->downloadFileList(
+                (int) $me->storage['channelTarget'],
+                $version
+            );
             if ($downloadSuccess === true) {
                 $messages['informations'][] =
                     sprintf($me->l('File list for version %s downloaded.'), $version)
@@ -390,7 +393,10 @@ class GitUpdate
                 $messages['error'] = true;
             }
         } elseif ( ! array_key_exists('fileList-'.$installedVersion, $me->storage)) {
-            $downloadSuccess = $me->downloadFileList($installedVersion);
+            $downloadSuccess = $me->downloadFileList(
+                (int) $me->storage['channelOrigin'],
+                $installedVersion
+            );
             if ($downloadSuccess === true) {
                 $messages['informations'][] =
                     sprintf($me->l('File list for version %s downloaded.'), $installedVersion);
@@ -489,7 +495,7 @@ class GitUpdate
     }
 
     /**
-     * Download a list of files for a given version from api.thirtybees.com and
+     * Download a list of files for a given version from the API server and
      * store it in $this->storage['fileList-'.$version] as a proper PHP array.
      *
      * For efficiency (a response can easily contain 10,000 lines), the
@@ -497,17 +503,19 @@ class GitUpdate
      * and Git (SHA1) hash: ['<path>' => '<hash>']. Permissions get ignored,
      * because all files should have 644 permissions.
      *
+     * @param int    $channel Channel for this version.
      * @param string $version List for this version.
      *
      * @return bool|string True on success, or error message on failure.
      *
      * @version 1.0.0 Initial version.
+     * @version 2.0.0 New parameter $channel.
      */
-    protected function downloadFileList($version)
+    protected function downloadFileList($channel, $version)
     {
-        $guzzle = $this->getGuzzle(2);
+        $guzzle = $this->getGuzzle($channel);
         $response = false;
-        $uri = basename(MyController::CHANNELS[2]['apiUrl']);
+        $uri = basename(MyController::CHANNELS[$channel]['apiUrl']);
         try {
             $response = $guzzle->post($uri, [
                 'form_params' => [
