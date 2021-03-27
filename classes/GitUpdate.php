@@ -1011,8 +1011,9 @@ class GitUpdate
             return $this->l('Could not create temporary file for download.');
         }
 
-        $guzzle = $this->getGuzzle(2);
-        $uri = basename(MyController::CHANNELS[2]['apiUrl']);
+        $channel = (int) $this->storage['channelTarget'];
+        $guzzle = $this->getGuzzle($channel);
+        $uri = basename(MyController::CHANNELS[$channel]['apiUrl']);
         try {
             $response = $guzzle->post($uri, [
                 'form_params' => [
