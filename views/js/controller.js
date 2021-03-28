@@ -70,27 +70,37 @@ function channelChange() {
     data: {'list': channel.channel},
     dataType: 'json',
     success: function(data, status, xhr) {
-      if (channel.channel === 'tags') {
-        data.reverse();
+      if (typeof(data) === 'object' && data !== null) {
+        if (channel.channel === 'tags') {
+          data.reverse();
+        }
+        data.forEach(function(version) {
+            versionSelect.append('<option>'+version+'</option>');
+            if (version === coreUpdaterVersion) {
+              versionSelect.val(coreUpdaterVersion);
+            }
+        });
+        $('#conf_id_CORE_UPDATER_VERSION .help-block').parent().slideUp(200);
+        versionSelect.trigger('change');
+      } else {
+        console.log(channel.apiUrl+' reported:', data);
+        hintToRequestError();
       }
-      data.forEach(function(version) {
-          versionSelect.append('<option>'+version+'</option>');
-          if (version === coreUpdaterVersion) {
-            versionSelect.val(coreUpdaterVersion);
-          }
-      });
-      $('#conf_id_CORE_UPDATER_VERSION .help-block').parent().slideUp(200);
-      versionSelect.trigger('change');
     },
     error: function(xhr, status, error) {
-      var helpText = $('#conf_id_CORE_UPDATER_VERSION .help-block');
-      helpText.html(coreUpdaterTexts.errorRetrieval);
-      helpText.css('color', 'red');
-      helpText.parent().slideDown(200);
       console.log('Request to '+channel.apiUrl
                   +' failed with status \''+xhr.state()+'\'.');
+      hintToRequestError();
     },
   });
+
+  function hintToRequestError() {
+    var helpText = $('#conf_id_CORE_UPDATER_VERSION .help-block');
+
+    helpText.html(coreUpdaterTexts.errorRetrieval);
+    helpText.css('color', 'red');
+    helpText.parent().slideDown(200);
+  }
 }
 
 function versionChange() {
