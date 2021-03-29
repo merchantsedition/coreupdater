@@ -62,6 +62,10 @@ function channelChange() {
     return;
   }
 
+  document.getElementsByName("coreUpdaterCompare").forEach(element => {
+    element.disabled = true;
+  });
+
   versionSelect.empty();
   var channel = coreUpdaterChannelList[channelSelect.selectedIndex];
   $.ajax({
@@ -82,6 +86,10 @@ function channelChange() {
         });
         $('#conf_id_CORE_UPDATER_VERSION .help-block').parent().slideUp(200);
         versionSelect.trigger('change');
+
+        document.getElementsByName("coreUpdaterCompare").forEach(element => {
+          element.disabled = false;
+        });
       } else {
         console.log(channel.apiUrl+' reported:', data);
         hintToRequestError();
