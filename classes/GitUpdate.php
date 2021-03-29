@@ -526,6 +526,7 @@ class GitUpdate
             $this->storage['fileList-'.$version] = [];
             return trim($e->getMessage());
         }
+        $response = json_decode($response);
 
         if ($this->storage['ignoreTheme']) {
             $releaseFilter = array_merge(static::RELEASE_FILTER,
@@ -536,7 +537,7 @@ class GitUpdate
         }
 
         $fileList = false;
-        if ($response) {
+        if (is_array($response)) {
             $fileList = [];
 
             $adminDir = false;
@@ -546,7 +547,7 @@ class GitUpdate
                 $adminDir = trim($adminDir, '/').'/';
             }
 
-            foreach (json_decode($response) as $line) {
+            foreach ($response as $line) {
                 // An incoming line is like '<permissions> blob <sha1>\t<path>'.
                 // Use explode limits, to allow spaces in the last field.
                 $fields = explode(' ', $line, 3);
@@ -579,6 +580,8 @@ class GitUpdate
                     $fileList[$path] = $hash;
                 }
             }
+        } else {
+            return preg_replace('/^Error: /', '', $response);
         }
         if ($fileList === false) {
             return $this->l('Downloaded file list did not contain any file.');
