@@ -513,6 +513,10 @@ class GitUpdate
      */
     protected function downloadFileList($channel, $version)
     {
+        if ( ! is_integer($channel) || ! $version) {
+            return $this->l('Channel and/or version not defined.');
+        }
+
         $guzzle = $this->getGuzzle($channel);
         $response = false;
         $uri = basename(MyController::CHANNELS[$channel]['apiUrl']);
