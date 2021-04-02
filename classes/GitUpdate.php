@@ -252,30 +252,7 @@ class GitUpdate
     {
         $me = static::getInstance();
         $installedVersion = static::getInstalledVersion();
-
-        /**
-         * This is the equivalent to _TB_VERSION_, stored in
-         * config/settings.inc.php, but for the channel from where the update
-         * was fetched from. Storing the channel is required, because a given
-         * version has no fixed relationship to a certain channel.
-         *
-         * Knowing the channel is important, as it gives e.g. the API URL
-         * needed for fetching original hashes of installed files. It's not
-         * fatal to not have it, though.
-         */
-        $installedChannel = \Configuration::getGlobalValue(
-            'CORE_UPDATER_INSTALLCHANNEL'
-        );
-        if ($installedChannel === false
-            || ! array_key_exists($installedChannel, MyController::CHANNELS)
-        ) {
-            // Guess it and hope for the best!
-            if (version_compare($installedVersion, '1.9.0', '>=')) {
-                $installedChannel = 0; // Merchant's Edition Stable
-            } else {
-                $installedChannel = 2; // thirty bees Stable
-            }
-        }
+        $installedChannel = static::getInstallChannel($installedVersion);
 
         // Dump very old storage.
         if (file_exists(static::STORAGE_PATH)
@@ -1325,6 +1302,42 @@ class GitUpdate
         }
 
         return $version;
+    }
+
+    /**
+     * Resolve the channel matching the installed version.
+     *
+     * @return int Channel.
+     *
+     * @version 2.0.0 Initial version.
+     */
+    public static function getInstallChannel($installedVersion)
+    {
+        /**
+         * This is the equivalent to _TB_VERSION_, stored in
+         * config/settings.inc.php, but for the channel from where the update
+         * was fetched from. Storing the channel is required, because a given
+         * version has no fixed relationship to a certain channel.
+         *
+         * Knowing the channel is important, as it gives e.g. the API URL
+         * needed for fetching original hashes of installed files. It's not
+         * fatal to not have it, though.
+         */
+        $installedChannel = \Configuration::getGlobalValue(
+            'CORE_UPDATER_INSTALLCHANNEL'
+        );
+        if ($installedChannel === false
+            || ! array_key_exists($installedChannel, MyController::CHANNELS)
+        ) {
+            // Guess it and hope for the best!
+            if (version_compare($installedVersion, '1.9.0', '>=')) {
+                $installedChannel = 0; // Merchant's Edition Stable
+            } else {
+                $installedChannel = 2; // thirty bees Stable
+            }
+        }
+
+        return $installedChannel;
     }
 
     /**

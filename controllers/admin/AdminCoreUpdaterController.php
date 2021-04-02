@@ -39,7 +39,7 @@ class AdminCoreUpdaterController extends ModuleAdminController
 {
     const CHANNELS  = [
         // Changing this list may require adjusting the default for
-        // CORE_UPDATER_INSTALLCHANNEL in GitUpdate::setCompareVersions().
+        // CORE_UPDATER_INSTALLCHANNEL in GitUpdate::getInstallChannel().
         [
             'name'    => 'Merchant\'s Edition Stable',
             'channel' => 'tags',
