@@ -50,16 +50,16 @@ class GitUpdate
      * File to store collected knowledge about the update between invocations.
      * It should be a valid PHP file and gets written and included as needed.
      */
-    const STORAGE_PATH = _PS_CACHE_DIR_.'GitUpdateStorage.php';
+    const STORAGE_PATH = _PS_CACHE_DIR_.'coreupdater/storage.php';
     /**
      * Directory where update files get downloaded to, with their full
      * directory hierarchy.
      */
-    const DOWNLOADS_PATH = _PS_CACHE_DIR_.'GitUpdateDownloads';
+    const DOWNLOADS_PATH = _PS_CACHE_DIR_.'coreupdater/downloads';
     /**
      * Path of the update script.
      */
-    const SCRIPT_PATH = _PS_CACHE_DIR_.'GitUpdateScript.php';
+    const SCRIPT_PATH = _PS_CACHE_DIR_.'coreupdater/script.php';
 
     /**
      * Set of regular expressions for removing file paths from the list of
@@ -153,6 +153,11 @@ class GitUpdate
      */
     protected function __construct()
     {
+        $cacheDir = dirname(static::STORAGE_PATH);
+        if ( ! is_dir($cacheDir)) {
+            mkdir($cacheDir, 0777, true);
+        }
+
         if (is_readable(static::STORAGE_PATH)) {
             require static::STORAGE_PATH;
         }
@@ -182,9 +187,7 @@ class GitUpdate
      */
     public static function uninstall()
     {
-        @unlink(static::STORAGE_PATH);
-        \Tools::deleteDirectory(static::DOWNLOADS_PATH);
-        @unlink(static::SCRIPT_PATH);
+        \Tools::deleteDirectory(dirname(static::STORAGE_PATH));
 
         return true;
     }
