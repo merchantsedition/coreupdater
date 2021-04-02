@@ -432,6 +432,7 @@ class AdminCoreUpdaterController extends ModuleAdminController
              * This defines comparison and update versions for all subsequent
              * operations.
              */
+            \CoreUpdater\GitUpdate::deleteStorage('newCompare');
             \CoreUpdater\GitUpdate::setCompareVersions($channel, $version);
         } elseif (Tools::isSubmit('coreUpdaterUpdate')) {
             /**
