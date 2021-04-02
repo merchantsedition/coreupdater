@@ -52,15 +52,6 @@ class GitUpdate
      */
     const STORAGE_PATH = _PS_CACHE_DIR_.'GitUpdateStorage.php';
     /**
-     * Storage items NOT changing when choosing a different original/target
-     * version. Not deleting them speeds up comparison for merchants dialing
-     * through several versions.
-     */
-    const STORAGE_PERMANENT_ITEMS = [
-        // File lists for stable versions.
-        '#^fileList-[0-9\.]+$#',
-    ];
-    /**
      * Directory where update files get downloaded to, with their full
      * directory hierarchy.
      */
@@ -285,11 +276,13 @@ class GitUpdate
 
         // Dump very old storage.
         if (file_exists(static::STORAGE_PATH)
-            && time() - filemtime(static::STORAGE_PATH) > 86400) {
-            static::deleteStorage(true);
+            && time() - filemtime(static::STORAGE_PATH) > 86400
+        ) {
+            static::deleteStorage();
         }
 
         // Reset an invalid storage set.
+        $compareChange = false;
         $ignoreTheme = \Configuration::getGlobalValue(
             'CORE_UPDATER_IGNORE_THEME'
         );
@@ -297,20 +290,26 @@ class GitUpdate
             || $me->storage['channelOrigin'] !== $installedChannel
             || ! array_key_exists('versionOrigin', $me->storage)
             || $me->storage['versionOrigin'] !== $installedVersion
-            || ! array_key_exists('channelTarget', $me->storage)
+        ) {
+            unset($me->storage['fileList-'.$installedVersion]);
+            $compareChange = true;
+        }
+        if ( ! array_key_exists('channelTarget', $me->storage)
             || $me->storage['channelTarget'] !== $channelTarget
             || ! array_key_exists('versionTarget', $me->storage)
             || $me->storage['versionTarget'] !== $versionTarget
-            || ! array_key_exists('ignoreTheme', $me->storage)
-            || $me->storage['ignoreTheme'] !== $ignoreTheme) {
+        ) {
+            unset($me->storage['fileList-'.$versionTarget]);
+            $compareChange = true;
+        }
+        if ( ! array_key_exists('ignoreTheme', $me->storage)
+            || $me->storage['ignoreTheme'] !== $ignoreTheme
+        ) {
+            $compareChange = true;
+        }
 
-            if ( ! array_key_exists('ignoreTheme', $me->storage)
-                || $me->storage['ignoreTheme'] !== $ignoreTheme) {
-                // Changing theme ignorance invalidates file lists.
-                static::deleteStorage(true);
-            } else {
-                static::deleteStorage(false);
-            }
+        if ($compareChange) {
+            static::deleteStorage('newCompare');
 
             $me->storage['channelOrigin']  = $installedChannel;
             $me->storage['versionOrigin'] = $installedVersion;
@@ -453,29 +452,38 @@ class GitUpdate
     /**
      * Delete storage. Which means, the next compareStep() call starts over.
      *
-     * @param bool $fullDelete Whether to delete all storage. Else only data
-     *                         collected and evaluated locally gets removed.
+     * @param bool|string $deleteType - 'newSession' for a new session.
+     *                                - 'newCompare' for a new comparison.
+     *                                - Any other value deletes all storage.
      *
      * @version 1.0.0 Initial version.
+     * @version 2.0.0 $deleteType string rather than $fullDelete flag.
      */
-    public static function deleteStorage($fullDelete = true)
+    public static function deleteStorage($deleteType = false)
     {
         $me = static::getInstance();
 
-        if ($fullDelete) {
-            $me->storage = [];
-        } else {
-            foreach (array_keys($me->storage) as $key) {
-                $keep = false;
-                foreach (static::STORAGE_PERMANENT_ITEMS as $filter) {
-                    if (preg_match($filter, $key)) {
-                        $keep = true;
+        if ($deleteType === 'newSession' || $deleteType === 'newCompare') {
+            if ($deleteType === 'newSession') {
+                foreach (array_keys($me->storage) as $key) {
+                    if (substr($key, 0, 9) === 'fileList-') {
+                        unset($me->storage[$key]);
                     }
                 }
-                if ( ! $keep) {
+            }
+
+            foreach (array_keys($me->storage) as $key) {
+                if (substr($key, 0, 9) === 'topLevel-') {
                     unset($me->storage[$key]);
                 }
             }
+            unset($me->storage['requirements']);
+            unset($me->storage['installationList']);
+            unset($me->storage['distributionFileset']);
+            unset($me->storage['changeset']);
+            unset($me->storage['incompatibleModules']);
+        } else {
+            $me->storage = [];
         }
     }
 
