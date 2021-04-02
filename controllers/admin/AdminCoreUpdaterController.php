@@ -20,6 +20,7 @@
  * @license   Academic Free License (AFL 3.0)
  */
 
+use CoreUpdater\GitUpdate;
 use CoreUpdater\DatabaseSchemaComparator;
 use CoreUpdater\InformationSchemaBuilder;
 use CoreUpdater\ObjectModelSchemaBuilder;
@@ -141,7 +142,7 @@ class AdminCoreUpdaterController extends ModuleAdminController
      */
     private function initCodebaseTab()
     {
-        $installedVersion = \CoreUpdater\GitUpdate::getInstalledVersion();
+        $installedVersion = GitUpdate::getInstalledVersion();
         $selectedVersion = false;
 
         $this->fields_options = [];
@@ -312,7 +313,7 @@ class AdminCoreUpdaterController extends ModuleAdminController
                     ],
                 ];
             } else {
-                \CoreUpdater\GitUpdate::deleteStorage('newSession');
+                GitUpdate::deleteStorage('newSession');
             }
         }
 
@@ -432,8 +433,8 @@ class AdminCoreUpdaterController extends ModuleAdminController
              * This defines comparison and update versions for all subsequent
              * operations.
              */
-            \CoreUpdater\GitUpdate::deleteStorage('newCompare');
-            \CoreUpdater\GitUpdate::setCompareVersions($channel, $version);
+            GitUpdate::deleteStorage('newCompare');
+            GitUpdate::setCompareVersions($channel, $version);
         } elseif (Tools::isSubmit('coreUpdaterUpdate')) {
             /**
              * Only addition for the actual update is the list of files to
@@ -441,7 +442,7 @@ class AdminCoreUpdaterController extends ModuleAdminController
              */
             $obsoleteList = Tools::getValue('CORE_UPDATER_REMOVE_LIST');
             if ($obsoleteList) {
-                \CoreUpdater\GitUpdate::setSelectedObsolete(
+                GitUpdate::setSelectedObsolete(
                     json_decode($obsoleteList, true)
                 );
             }
@@ -451,7 +452,7 @@ class AdminCoreUpdaterController extends ModuleAdminController
              * action is to show the initial page already.
              */
             $message = '<p>'.$this->l('Shop updated successfully.').'</p>';
-            $backupDir = \CoreUpdater\GitUpdate::getBackupDir();
+            $backupDir = GitUpdate::getBackupDir();
             if ($backupDir) {
                 $message .= '<p>';
                 $message .= sprintf($this->l('Manually edited files, if any, were backed up in %s.'), $backupDir);
@@ -498,7 +499,7 @@ class AdminCoreUpdaterController extends ModuleAdminController
         do {
             $stepStart = microtime(true);
 
-            \CoreUpdater\GitUpdate::{$method}($messages);
+            GitUpdate::{$method}($messages);
             if ($messages['error']) {
                 $messages['done'] = true;
             }
