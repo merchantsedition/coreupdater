@@ -191,6 +191,7 @@ class AdminCoreUpdaterController extends ModuleAdminController
             if ( ! $selectedVersion) {
                 $selectedVersion = $installedVersion;
             }
+            $channelDefault = GitUpdate::getInstallChannel($selectedVersion);
 
             /*
              * Show a channel and version select panel.
@@ -222,7 +223,7 @@ class AdminCoreUpdaterController extends ModuleAdminController
                         'identifier'  => 'channel',
                         'list'        => $channelSelectList,
                         'js'          => 'channelChange();',
-                        'default'     => 0,
+                        'defaultValue'          => $channelDefault,
                         'no_multishop_checkbox' => true,
                     ],
                     'CORE_UPDATER_VERSION' => [
@@ -239,7 +240,6 @@ class AdminCoreUpdaterController extends ModuleAdminController
                         'title'      => $this->l('Ignore community themes'),
                         'desc'       => $this->l('When enabled, the updater ignores themes coming with the distribution. While this prohibits bugs from getting fixed, it can make sense for those who customized this theme for their needs, without making a copy before.'),
                         'js'         => 'ignoranceChange();',
-                        'default'    => false,
                         'no_multishop_checkbox' => true,
                     ],
                 ],
