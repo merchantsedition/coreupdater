@@ -1002,7 +1002,7 @@ class GitUpdate
             $pregAdminDir = preg_quote($adminDir);
         }
 
-        $pathList = array_slice(array_keys($this->storage['downloads']), 0, 100);
+        $pathList = array_slice(array_keys($this->storage['downloads']), 0, 500);
         foreach ($pathList as &$path) {
             if ($adminDir) {
                 $path = preg_replace('#^'.$pregAdminDir.'#', 'admin/', $path);
