@@ -452,6 +452,7 @@ class GitUpdate
                 }
             }
 
+            // Compare storage.
             foreach (array_keys($me->storage) as $key) {
                 if (substr($key, 0, 9) === 'topLevel-') {
                     unset($me->storage[$key]);
@@ -462,6 +463,14 @@ class GitUpdate
             unset($me->storage['distributionFileset']);
             unset($me->storage['changeset']);
             unset($me->storage['incompatibleModules']);
+
+            // Update storage.
+            unset($me->storage['downloads']);
+            unset($me->storage['updateScript']);
+            unset($me->storage['updateScriptDone']);
+            unset($me->storage['aftermathDone']);
+            unset($me->storage['cachesCleared']);
+            unset($me->storage['databaseMigration']);
         } else {
             $me->storage = [];
         }
