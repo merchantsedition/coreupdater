@@ -1255,6 +1255,38 @@ class GitUpdate
         $errors = array_merge($errors,
                               Retrocompatibility::doAllDatabaseUpgrades());
 
+        /**
+         * When upgrading from tb or an early version of Merchant's Edition to
+         * Merchant's Edition with the new back office style, give all
+         * employees this brilliant new style.
+         *
+         * This is no problem for rollbacks, as back office falls back to the
+         * blank bootstrap style in case the database points to a not existing
+         * style.
+         */
+        $origin = MyController::CHANNELS[$this->storage['channelOrigin']]['name'];
+        $target = MyController::CHANNELS[$this->storage['channelTarget']]['name'];
+        if ((
+                preg_match('/^thirty/', $origin)
+                || $this->storage['versionOrigin'] === '1.9.0'
+                || $this->storage['versionOrigin'] === '1.9.1'
+            )
+            && preg_match('/^Merchant/', $target)
+            && version_compare($this->storage['versionTarget'], '1.9.2', '>=')
+        ) {
+            $db = \Db::getInstance();
+            $db->execute('UPDATE `'._DB_PREFIX_.'employee`
+                SET `bo_color` = NULL,
+                    `bo_theme` = "default",
+                    `bo_css` = "schemes/admin-theme-merchantsedition.css"
+                WHERE `bo_css` NOT LIKE "%_rtl.css"', false);
+            $db->execute('UPDATE `'._DB_PREFIX_.'employee`
+                SET `bo_color` = NULL,
+                    `bo_theme` = "default",
+                    `bo_css` = "schemes_rtl/admin-theme-merchantsedition_rtl.css"
+                WHERE `bo_css` LIKE "%_rtl.css"', false);
+        }
+
         return count($errors) ? $errors : true;
     }
 
