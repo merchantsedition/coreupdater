@@ -490,6 +490,16 @@ class AdminCoreUpdaterController extends ModuleAdminController
             'done'          => true,
         ];
 
+        // This is a safeguard for developers.
+        if ($type === 'processUpdate' && (
+            file_exists('../admin-dev')
+            || file_exists('../install-dev')
+        )) {
+            $messages['informations'][] = 'Nah, don\'t mess up the development repository.';
+
+            die(json_encode($messages));
+        }
+
         $method = lcfirst(preg_replace('/^process/', '', $type)).'Step';
         if ( ! method_exists('\CoreUpdater\GitUpdate', $method)) {
             die('Invalid request for Ajax action \''.$type.'\'.');
