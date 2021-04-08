@@ -101,6 +101,11 @@ class CoreUpdater extends Module
             $success = false;
         }
 
+        Configuration::updateGlobalValue(
+            'CORE_UPDATER_INSTALLCHANNEL',
+             \CoreUpdater\GitUpdate::getInstallChannel(_TB_VERSION_)
+        );
+
         return $success;
     }
 
