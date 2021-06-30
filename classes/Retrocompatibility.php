@@ -39,6 +39,9 @@ class Retrocompatibility
      * uninstalled.
      */
     const MODULE_MIN_INCOMPAT = [
+        '1.0.0'   => [
+            'autoupgrade',
+        ],
         '1.0.4'   => [
             'graphnvd3',
             'gridhtml',
