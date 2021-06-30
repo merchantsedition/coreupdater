@@ -1316,6 +1316,10 @@ class GitUpdate
         if (function_exists('opcache_reset')) {
             opcache_reset();
         }
+
+        // This should match \ModuleUpdate::CACHE_PATH. This constant isn't
+        // available in Merchant's Edition before v1.9.3, though.
+        @unlink(_PS_CACHE_DIR_.'modules.json');
     }
 
     /**
