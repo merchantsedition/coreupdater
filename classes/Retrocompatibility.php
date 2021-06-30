@@ -81,6 +81,9 @@ class Retrocompatibility
      * version of the update is this or lower, these modules get uninstalled.
      */
     const MODULE_MAX_INCOMPAT = [
+        '1.9.2'   => [
+            'tbcurrencyformatter',
+        ],
     ];
 
     /**
