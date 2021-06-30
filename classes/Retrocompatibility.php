@@ -66,30 +66,12 @@ class Retrocompatibility
             'statsstock',
             'statsvisits',
         ],
-        '1.0.5'   => [
-        ],
-        '1.0.6'   => [
-        ],
-        '1.0.7'   => [
-        ],
-        '1.0.8'   => [
-        ],
     ];
     /**
      * Modules known to be incompatible up to a certain version. If the target
      * version of the update is this or lower, these modules get uninstalled.
      */
     const MODULE_MAX_INCOMPAT = [
-        '1.0.4'   => [
-        ],
-        '1.0.5'   => [
-        ],
-        '1.0.6'   => [
-        ],
-        '1.0.7'   => [
-        ],
-        '1.0.8'   => [
-        ],
     ];
 
     /**
