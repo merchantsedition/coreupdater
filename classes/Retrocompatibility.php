@@ -66,6 +66,9 @@ class Retrocompatibility
             'statsstock',
             'statsvisits',
         ],
+        '1.9.3'   => [
+            'tbupdater',
+        ],
     ];
     /**
      * Modules known to be incompatible up to a certain version. If the target
