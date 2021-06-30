@@ -69,6 +69,9 @@ class Retrocompatibility
             'statsstock',
             'statsvisits',
         ],
+        '1.9.0'   => [
+            'donationminer',
+        ],
         '1.9.3'   => [
             'tbupdater',
         ],
